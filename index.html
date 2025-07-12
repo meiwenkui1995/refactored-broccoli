@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出差行程费用管理系统</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --income-color: #9b59b6;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 15px;
+            touch-action: manipulation;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            padding: 15px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        h1 {
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+            font-size: 1.6rem;
+        }
+        
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .form-section {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        
+        input, select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            width: 100%;
+            min-height: 44px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin: 5px 5px 5px 0;
+            min-height: 44px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-export {
+            background-color: #f39c12;
+        }
+        
+        .compact-result {
+            background: #f0f8ff;
+            padding: 15px;
+            border-left: 4px solid var(--primary-color);
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .result-item {
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .result-label {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .result-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .positive {
+            color: var(--success-color);
+        }
+        
+        .negative {
+            color: var(--danger-color);
+        }
+        
+        .neutral {
+            color: var(--primary-color);
+        }
+        
+        .income {
+            color: var(--income-color);
+        }
+        
+        .image-upload {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .image-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 6px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        
+        .records-section {
+            margin-top: 25px;
+        }
+        
+        .filter-section {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .date-range {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .responsive-table {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.9rem;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        tr:hover {
+            background-color: #f0f7fd;
+        }
+        
+        .action-cell {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .thumbnail {
+            max-width: 50px;
+            max-height: 50px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 80%;
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #bbb;
+        }
+        
+        .card-list {
+            display: none;
+        }
+        
+        .record-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .record-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .export-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .compact-result {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-list {
+                display: block;
+            }
+            
+            .responsive-table {
+                display: none;
+            }
+            
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .date-range {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            input, select {
+                font-size: 1.1rem;
+            }
+            
+            .image-preview img {
+                max-width: 80px;
+                max-height: 80px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .form-section, .records-section {
+                padding: 12px;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+            
+            .result-value {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>出差行程费用管理系统</h1>
+            <p>记录行程详情，精确计算差旅报销</p>
+        </header>
+        
+        <section class="form-section">
+            <h2>行程信息录入</h2>
+            <form id="tripForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="departure">出发地*</label>
+                        <input type="text" id="departure" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="destination">目的地*</label>
+                        <input type="text" id="destination" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="distance">行程公里数*</label>
+                        <input type="number" id="distance" min="0" step="0.1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reimburseRate">报销额度(元/公里)</label>
+                        <input type="number" id="reimburseRate" min="0" step="0.01" value="1.80">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fuelConsumption">油耗(升/百公里)</label>
+                        <input type="number" id="fuelConsumption" min="0" step="0.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fuelPrice">油价(元/升)</label>
+                        <input type="number" id="fuelPrice" min="0" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tollFee">高速费(元)</label>
+                        <input type="number" id="tollFee" min="0" step="0.01">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="image-upload">
+                        <label for="imageUpload">行程证明照片：</label>
+                        <input type="file" id="imageUpload" accept="image/*" multiple>
+                    </div>
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="button" id="calculateBtn">计算报销金额</button>
+                </div>
+            </form>
+            
+            <div class="compact-result" id="resultBox" style="display:none;">
+                <div class="result-item">
+                    <div class="result-label">行程公里数</div>
+                    <div class="result-value neutral" id="compactDistance">0.00 km</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">油耗费用</div>
+                    <div class="result-value negative" id="compactFuelCost">0.00 元</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">高速费用</div>
+                    <div class="result-value negative" id="compactTollFee">0.00 元</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">实际支出</div>
+                    <div class="result-value negative" id="compactActualSpending">0.00 元</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">应报销金额</div>
+                    <div class="result-value income" id="compactReimbursable">0.00 元</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">结余金额</div>
+                    <div class="result-value positive" id="compactBalance">0.00 元</div>
+                </div>
+            </div>
+            
+            <div class="form-group button-group">
+                <button type="button" id="saveRecordBtn" class="btn-success" style="display:none;">保存行程记录</button>
+                <button type="button" id="resetFormBtn" class="btn-danger">重置表单</button>
+            </div>
+        </section>
+        
+        <section class="records-section">
+            <h2>行程记录</h2>
+            <div class="filter-section">
+                <div class="form-group">
+                    <label for="filterYear">年份</label>
+                    <select id="filterYear">
+                        <option value="all">全部年份</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="filterMonth">月份</label>
+                    <select id="filterMonth">
+                        <option value="all">全部月份</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="exportRange">导出范围</label>
+                    <select id="exportRange">
+                        <option value="all">全部记录</option>
+                        <option value="month">本月记录</option>
+                        <option value="day">今日记录</option>
+                        <option value="custom">自定义日期</option>
+                    </select>
+                </div>
+                
+                <div class="date-range" id="customDateRange" style="display:none;">
+                    <div class="form-group">
+                        <label for="startDate">开始日期</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">结束日期</label>
+                        <input type="date" id="endDate">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="button" id="filterBtn" class="btn-success">筛选</button>
+                </div>
+            </div>
+            
+            <div class="responsive-table">
+                <table id="recordsTable">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>出发地</th>
+                            <th>目的地</th>
+                            <th>里程(公里)</th>
+                            <th>高速费(元)</th>
+                            <th>油费(元)</th>
+                            <th>应报销(元)</th>
+                            <th>实际支出(元)</th>
+                            <th>结余(元)</th>
+                            <th>证明照片</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsBody">
+                        <!-- 记录会动态插入到这里 -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card-list" id="cardList">
+                <!-- 移动端卡片视图 -->
+            </div>
+            
+            <div class="export-options">
+                <button type="button" id="exportSimpleBtn" class="btn-export">导出精简数据</button>
+                <button type="button" id="exportFullBtn" class="btn-export">导出完整数据</button>
+            </div>
+        </section>
+        
+        <div id="imageModal" class="modal">
+            <span class="close">&times;</span>
+            <img class="modal-content" id="modalImage">
+        </div>
+        
+        <footer>
+            <p>出差行程费用管理系统 v1.6</p>
+        </footer>
+    </div>
+    
+    <script>
+        // 存储本地数据的关键字
+        const STORAGE_KEY = "travel_records";
+        
+        // DOM元素
+        const elements = {
+            form: document.getElementById('tripForm'),
+            calculateBtn: document.getElementById('calculateBtn'),
+            saveRecordBtn: document.getElementById('saveRecordBtn'),
+            resetFormBtn: document.getElementById('resetFormBtn'),
+            filterBtn: document.getElementById('filterBtn'),
+            exportSimpleBtn: document.getElementById('exportSimpleBtn'),
+            exportFullBtn: document.getElementById('exportFullBtn'),
+            resultBox: document.getElementById('resultBox'),
+            imagePreview: document.getElementById('imagePreview'),
+            imageUpload: document.getElementById('imageUpload'),
+            recordsBody: document.getElementById('recordsBody'),
+            filterYear: document.getElementById('filterYear'),
+            filterMonth: document.getElementById('filterMonth'),
+            exportRange: document.getElementById('exportRange'),
+            customDateRange: document.getElementById('customDateRange'),
+            startDate: document.getElementById('startDate'),
+            endDate: document.getElementById('endDate'),
+            modal: document.getElementById('imageModal'),
+            modalImage: document.getElementById('modalImage'),
+            closeModal: document.querySelector('.close'),
+            cardList: document.getElementById('cardList'),
+            
+            // 计算结果元素
+            compactDistance: document.getElementById('compactDistance'),
+            compactFuelCost: document.getElementById('compactFuelCost'),
+            compactTollFee: document.getElementById('compactTollFee'),
+            compactActualSpending: document.getElementById('compactActualSpending'),
+            compactReimbursable: document.getElementById('compactReimbursable'),
+            compactBalance: document.getElementById('compactBalance')
+        };
+        
+        // 全局变量存储当前记录信息
+        let currentRecord = {
+            images: [],
+            date: new Date(),
+            fuelCost: 0
+        };
+        
+        // 初始化应用
+        function initApp() {
+            // 事件监听
+            elements.calculateBtn.addEventListener('click', calculateReimbursement);
+            elements.saveRecordBtn.addEventListener('click', saveRecord);
+            elements.resetFormBtn.addEventListener('click', resetForm);
+            elements.filterBtn.addEventListener('click', filterRecords);
+            elements.exportSimpleBtn.addEventListener('click', () => exportRecords('simple'));
+            elements.exportFullBtn.addEventListener('click', () => exportRecords('full'));
+            elements.imageUpload.addEventListener('change', handleImageUpload);
+            elements.closeModal.addEventListener('click', () => elements.modal.style.display = 'none');
+            elements.modal.addEventListener('click', () => elements.modal.style.display = 'none');
+            elements.exportRange.addEventListener('change', toggleCustomDateRange);
+            
+            // 初始化筛选器
+            initFilters();
+            
+            // 加载现有记录
+            loadRecords();
+            
+            // 设置默认日期
+            const today = new Date().toISOString().split('T')[0];
+            elements.startDate.value = today;
+            elements.endDate.value = today;
+        }
+        
+        // 切换自定义日期范围显示
+        function toggleCustomDateRange() {
+            if (elements.exportRange.value === 'custom') {
+                elements.customDateRange.style.display = 'flex';
+            } else {
+                elements.customDateRange.style.display = 'none';
+            }
+        }
+        
+        // 初始化年份和月份筛选器
+        function initFilters() {
+            const currentYear = new Date().getFullYear();
+            
+            // 添加最近5年
+            for (let i = currentYear; i >= currentYear - 5; i--) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i + '年';
+                elements.filterYear.appendChild(option);
+            }
+            
+            // 添加月份
+            for (let i = 1; i <= 12; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i + '月';
+                elements.filterMonth.appendChild(option);
+            }
+        }
+        
+        // 处理图片上传
+        function handleImageUpload(e) {
+            const files = e.target.files;
+            elements.imagePreview.innerHTML = '';
+            currentRecord.images = [];
+            
+            Array.from(files).forEach(file => {
+                if (!file.type.match('image.*')) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const imgSrc = event.target.result;
+                    const imgElement = document.createElement('img');
+                    imgElement.src = imgSrc;
+                    imgElement.alt = '行程证明';
+                    imgElement.classList.add('preview-image');
+                    
+                    imgElement.addEventListener('click', () => openImageModal(imgSrc));
+                    
+                    elements.imagePreview.appendChild(imgElement);
+                    currentRecord.images.push(imgSrc);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // 打开图片模态框
+        function openImageModal(src) {
+            elements.modalImage.src = src;
+            elements.modal.style.display = 'block';
+        }
+        
+        // 计算报销金额
+        function calculateReimbursement() {
+            // 获取表单值
+            const departure = document.getElementById('departure').value;
+            const destination = document.getElementById('destination').value;
+            const distance = parseFloat(document.getElementById('distance').value) || 0;
+            let reimburseRate = parseFloat(document.getElementById('reimburseRate').value);
+            
+            // 如果报销额度未填写或为0，使用默认值1.80
+            if (isNaN(reimburseRate) || reimburseRate <= 0) {
+                reimburseRate = 1.80;
+                document.getElementById('reimburseRate').value = reimburseRate;
+            }
+            
+            const fuelConsumption = parseFloat(document.getElementById('fuelConsumption').value) || 0;
+            const fuelPrice = parseFloat(document.getElementById('fuelPrice').value) || 0;
+            const tollFee = parseFloat(document.getElementById('tollFee').value) || 0;
+            
+            // 验证必要字段
+            if (!departure || !destination || distance <= 0) {
+                alert('请填写出发地、目的地和有效公里数');
+                return;
+            }
+            
+            // 计算油费（按百公里油耗计算）
+            const fuelCost = (fuelConsumption * distance / 100) * fuelPrice;
+            
+            // 计算各项金额
+            const reimbursableAmount = distance * reimburseRate;
+            const actualSpending = fuelCost + tollFee;
+            const balanceAmount = reimbursableAmount - actualSpending;
+            
+            // 更新显示
+            elements.compactDistance.textContent = distance.toFixed(2) + ' km';
+            elements.compactFuelCost.textContent = fuelCost.toFixed(2) + ' 元';
+            elements.compactTollFee.textContent = tollFee.toFixed(2) + ' 元';
+            elements.compactActualSpending.textContent = actualSpending.toFixed(2) + ' 元';
+            elements.compactReimbursable.textContent = reimbursableAmount.toFixed(2) + ' 元';
+            elements.compactBalance.textContent = balanceAmount.toFixed(2) + ' 元';
+            
+            // 显示结果
+            elements.resultBox.style.display = 'grid';
+            elements.saveRecordBtn.style.display = 'block';
+            
+            // 保存当前记录数据
+            currentRecord = {
+                departure,
+                destination,
+                distance,
+                reimburseRate,
+                fuelConsumption,
+                fuelPrice,
+                tollFee,
+                fuelCost,
+                reimbursableAmount,
+                actualSpending,
+                balanceAmount,
+                images: currentRecord.images,
+                date: new Date()
+            };
+        }
+        
+        // 保存记录到本地存储
+        function saveRecord() {
+            // 获取现有记录
+            let records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            // 添加新记录
+            records.push(currentRecord);
+            
+            // 保存回本地存储
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            
+            // 重置表单
+            resetForm();
+            
+            // 刷新记录显示
+            loadRecords();
+            
+            alert('行程记录已保存！');
+        }
+        
+        // 重置表单
+        function resetForm() {
+            elements.form.reset();
+            elements.imagePreview.innerHTML = '';
+            elements.resultBox.style.display = 'none';
+            elements.saveRecordBtn.style.display = 'none';
+            currentRecord = { images: [], date: new Date(), fuelCost: 0 };
+        }
+        
+        // 加载并显示记录
+        function loadRecords() {
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            elements.recordsBody.innerHTML = '';
+            elements.cardList.innerHTML = '';
+            
+            records.forEach((record, index) => {
+                const date = new Date(record.date);
+                const formattedDate = formatDateTime(date);
+                
+                // 表格视图（桌面端）
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${record.departure}</td>
+                    <td>${record.destination}</td>
+                    <td>${record.distance.toFixed(1)}</td>
+                    <td>${record.tollFee ? record.tollFee.toFixed(2) : '0.00'}</td>
+                    <td>${record.fuelCost.toFixed(2)}</td>
+                    <td>${record.reimbursableAmount.toFixed(2)}</td>
+                    <td>${record.actualSpending.toFixed(2)}</td>
+                    <td>${record.balanceAmount.toFixed(2)}</td>
+                    <td>
+                        ${record.images.length > 0 ? 
+                            `<img src="${record.images[0]}" class="thumbnail" alt="证明照片" 
+                                  onclick="document.getElementById('modalImage').src='${record.images[0]}'; 
+                                           document.getElementById('imageModal').style.display='block';">` : 
+                            '无照片'}
+                    </td>
+                    <td class="action-cell">
+                        <button onclick="viewRecord(${index})">查看</button>
+                        <button onclick="deleteRecord(${index})" class="btn-danger">删除</button>
+                    </td>
+                `;
+                
+                elements.recordsBody.appendChild(row);
+                
+                // 卡片视图（移动端）
+                const card = document.createElement('div');
+                card.className = 'record-card';
+                
+                card.innerHTML = `
+                    <div class="record-header">
+                        <div><strong>${formattedDate}</strong></div>
+                        <div>${record.departure} → ${record.destination}</div>
+                    </div>
+                    
+                    <div class="record-detail">
+                        <div class="detail-label">里程</div>
+                        <div>${record.distance.toFixed(1)} 公里</div>
+                    </div>
+                    
+                    <div class="record-detail">
+                        <div class="detail-label">高速费</div>
+                        <div>${record.tollFee ? record.tollFee.toFixed(2) : '0.00'} 元</div>
+                    </div>
+                    
+                    <div class="record-detail">
+                        <div class="detail-label">油费</div>
+                        <div>${record.fuelCost.toFixed(2)} 元</div>
+                    </div>
+                    
+                    <div class="record-detail">
+                        <div class="detail-label">应报销</div>
+                        <div>${record.reimbursableAmount.toFixed(2)} 元</div>
+                    </div>
+                    
+                    <div class="record-detail">
+                        <div class="detail-label">实际支出</div>
+                        <div>${record.actualSpending.toFixed(2)} 元</div>
+                    </div>
+                    
+                    <div class="record-detail">
+                        <div class="detail-label">结余</div>
+                        <div>${record.balanceAmount.toFixed(2)} 元</div>
+                    </div>
+                    
+                    ${record.images.length > 0 ? `
+                        <div class="image-gallery">
+                            ${record.images.map(img => `
+                                <img src="${img}" class="thumbnail" alt="行程证明" 
+                                     onclick="document.getElementById('modalImage').src='${img}'; 
+                                              document.getElementById('imageModal').style.display='block';">`
+                            ).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="action-cell" style="margin-top: 10px;">
+                        <button onclick="viewRecord(${index})">详情查看</button>
+                        <button onclick="deleteRecord(${index})" class="btn-danger">删除记录</button>
+                    </div>
+                `;
+                
+                elements.cardList.appendChild(card);
+            });
+            
+            // 更新筛选器选项
+            updateFilterOptions(records);
+        }
+        
+        // 更新筛选器选项
+        function updateFilterOptions(records) {
+            // 提取所有的年份和月份
+            const uniqueYears = new Set();
+            const uniqueMonths = new Set();
+            
+            records.forEach(record => {
+                const date = new Date(record.date);
+                uniqueYears.add(date.getFullYear());
+                uniqueMonths.add(date.getMonth() + 1);
+            });
+            
+            // 更新年份筛选器
+            const yearSelect = elements.filterYear;
+            yearSelect.innerHTML = '<option value="all">全部年份</option>';
+            
+            Array.from(uniqueYears).sort((a, b) => b - a).forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year + '年';
+                yearSelect.appendChild(option);
+            });
+            
+            // 更新月份筛选器
+            const monthSelect = elements.filterMonth;
+            monthSelect.innerHTML = '<option value="all">全部月份</option>';
+            
+            Array.from(uniqueMonths).sort().forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = month + '月';
+                monthSelect.appendChild(option);
+            });
+        }
+        
+        // 筛选记录
+        function filterRecords() {
+            const selectedYear = elements.filterYear.value;
+            const selectedMonth = elements.filterMonth.value;
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            elements.recordsBody.innerHTML = '';
+            elements.cardList.innerHTML = '';
+            
+            records.forEach((record, index) => {
+                const date = new Date(record.date);
+                const year = date.getFullYear();
+                const month = date.getMonth() + 1;
+                
+                // 应用筛选条件
+                if ((selectedYear === 'all' || year === parseInt(selectedYear)) &&
+                    (selectedMonth === 'all' || month === parseInt(selectedMonth))) {
+                    
+                    const formattedDate = formatDateTime(date);
+                    
+                    // 表格视图（桌面端）
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${formattedDate}</td>
+                        <td>${record.departure}</td>
+                        <td>${record.destination}</td>
+                        <td>${record.distance.toFixed(1)}</td>
+                        <td>${record.tollFee ? record.tollFee.toFixed(2) : '0.00'}</td>
+                        <td>${record.fuelCost.toFixed(2)}</td>
+                        <td>${record.reimbursableAmount.toFixed(2)}</td>
+                        <td>${record.actualSpending.toFixed(2)}</td>
+                        <td>${record.balanceAmount.toFixed(2)}</td>
+                        <td>
+                            ${record.images.length > 0 ? 
+                                `<img src="${record.images[0]}" class="thumbnail" alt="证明照片" 
+                                      onclick="document.getElementById('modalImage').src='${record.images[0]}'; 
+                                               document.getElementById('imageModal').style.display='block';">` : 
+                                '无照片'}
+                        </td>
+                        <td class="action-cell">
+                            <button onclick="viewRecord(${index})">查看</button>
+                            <button onclick="deleteRecord(${index})" class="btn-danger">删除</button>
+                        </td>
+                    `;
+                    
+                    elements.recordsBody.appendChild(row);
+                    
+                    // 卡片视图（移动端）
+                    const card = document.createElement('div');
+                    card.className = 'record-card';
+                    
+                    card.innerHTML = `
+                        <div class="record-header">
+                            <div><strong>${formattedDate}</strong></div>
+                            <div>${record.departure} → ${record.destination}</div>
+                        </div>
+                        
+                        <div class="record-detail">
+                            <div class="detail-label">里程</div>
+                            <div>${record.distance.toFixed(1)} 公里</div>
+                        </div>
+                        
+                        <div class="record-detail">
+                            <div class="detail-label">高速费</div>
+                            <div>${record.tollFee ? record.tollFee.toFixed(2) : '0.00'} 元</div>
+                        </div>
+                        
+                        <div class="record-detail">
+                            <div class="detail-label">油费</div>
+                            <div>${record.fuelCost.toFixed(2)} 元</div>
+                        </div>
+                        
+                        <div class="record-detail">
+                            <div class="detail-label">应报销</div>
+                            <div>${record.reimbursableAmount.toFixed(2)} 元</div>
+                        </div>
+                        
+                        <div class="record-detail">
+                            <div class="detail-label">实际支出</div>
+                            <div>${record.actualSpending.toFixed(2)} 元</div>
+                        </div>
+                        
+                        <div class="record-detail">
+                            <div class="detail-label">结余</div>
+                            <div>${record.balanceAmount.toFixed(2)} 元</div>
+                        </div>
+                        
+                        ${record.images.length > 0 ? `
+                            <div class="image-gallery">
+                                ${record.images.map(img => `
+                                    <img src="${img}" class="thumbnail" alt="行程证明" 
+                                         onclick="document.getElementById('modalImage').src='${img}'; 
+                                                  document.getElementById('imageModal').style.display='block';">`
+                                ).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="action-cell" style="margin-top: 10px;">
+                            <button onclick="viewRecord(${index})">详情查看</button>
+                            <button onclick="deleteRecord(${index})" class="btn-danger">删除记录</button>
+                        </div>
+                    `;
+                    
+                    elements.cardList.appendChild(card);
+                }
+            });
+        }
+        
+        // 查看完整记录
+        function viewRecord(index) {
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            if (index < 0 || index >= records.length) return;
+            
+            const record = records[index];
+            
+            let details = `行程日期: ${formatDateTime(new Date(record.date))}\n`;
+            details += `出发地: ${record.departure}\n`;
+            details += `目的地: ${record.destination}\n`;
+            details += `公里数: ${record.distance.toFixed(1)} km\n`;
+            details += `报销额度: ${record.reimburseRate} 元/公里\n`;
+            details += `高速费: ${record.tollFee ? record.tollFee.toFixed(2) : '0.00'} 元\n`;
+            details += `油耗: ${record.fuelConsumption ? record.fuelConsumption.toFixed(2) : '0.00'} 升/百公里\n`;
+            details += `油价: ${record.fuelPrice ? record.fuelPrice.toFixed(2) : '0.00'} 元/升\n`;
+            details += `油费: ${record.fuelCost.toFixed(2)} 元\n`;
+            details += `应报销金额: ${record.reimbursableAmount.toFixed(2)} 元\n`;
+            details += `实际支出: ${record.actualSpending.toFixed(2)} 元\n`;
+            details += `结余金额: ${record.balanceAmount.toFixed(2)} 元\n`;
+            
+            alert(details);
+        }
+        
+        // 删除记录
+        function deleteRecord(index) {
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            if (index >= 0 && index < records.length) {
+                records.splice(index, 1);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+                loadRecords();
+            }
+        }
+        
+        // 导出记录为CSV
+        function exportRecords(mode) {
+            const exportRange = elements.exportRange.value;
+            const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            
+            if (records.length === 0) {
+                alert('没有可导出的行程记录');
+                return;
+            }
+            
+            // 根据选择的范围筛选记录
+            let filteredRecords = [];
+            let summaryTitle = '';
+            
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1;
+            const currentDay = today.getDate();
+            
+            switch (exportRange) {
+                case 'month':
+                    filteredRecords = records.filter(record => {
+                        const date = new Date(record.date);
+                        return date.getFullYear() === currentYear && 
+                               date.getMonth() + 1 === currentMonth;
+                    });
+                    summaryTitle = `${currentYear}年${currentMonth}月行程记录`;
+                    break;
+                    
+                case 'day':
+                    filteredRecords = records.filter(record => {
+                        const date = new Date(record.date);
+                        return date.getFullYear() === currentYear && 
+                               date.getMonth() + 1 === currentMonth &&
+                               date.getDate() === currentDay;
+                    });
+                    summaryTitle = `${formatDate(today)}行程记录`;
+                    break;
+                    
+                case 'custom':
+                    const startDate = new Date(elements.startDate.value);
+                    const endDate = new Date(elements.endDate.value);
+                    
+                    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                        alert('请选择有效的日期范围');
+                        return;
+                    }
+                    
+                    // 设置结束时间为当天的23:59:59
+                    endDate.setHours(23, 59, 59, 999);
+                    
+                    filteredRecords = records.filter(record => {
+                        const recordDate = new Date(record.date);
+                        return recordDate >= startDate && recordDate <= endDate;
+                    });
+                    summaryTitle = `${formatDate(startDate)}至${formatDate(endDate)}行程记录`;
+                    break;
+                    
+                default: // 'all'
+                    filteredRecords = records;
+                    summaryTitle = '全部行程记录';
+            }
+            
+            if (filteredRecords.length === 0) {
+                alert('在选择的范围内没有行程记录');
+                return;
+            }
+            
+            // 创建CSV内容 - 添加BOM解决中文乱码问题
+            let csvContent = '\uFEFF'; // UTF-8 BOM
+            
+            if (mode === 'simple') {
+                // 精简模式
+                csvContent += '日期,出发地,目的地,里程(公里),应报销金额(元)\n';
+                
+                // 添加记录行
+                filteredRecords.forEach(record => {
+                    const date = new Date(record.date);
+                    csvContent += `"${formatDate(date)}","${record.departure}","${record.destination}",`;
+                    csvContent += `${record.distance.toFixed(1)},`;
+                    csvContent += `${record.reimbursableAmount.toFixed(2)}\n`;
+                });
+                
+                // 添加汇总行
+                const totalRecords = filteredRecords.length;
+                const totalDistance = filteredRecords.reduce((sum, record) => sum + record.distance, 0);
+                const totalReimbursement = filteredRecords.reduce((sum, record) => sum + record.reimbursableAmount, 0);
+                
+                csvContent += '\n';
+                csvContent += `汇总统计,${summaryTitle},,,\n`;
+                csvContent += `总行程记录数,${totalRecords},,,\n`;
+                csvContent += `总公里数,${totalDistance.toFixed(1)},,,\n`;
+                csvContent += `总应报销金额,${totalReimbursement.toFixed(2)},,,\n`;
+            } else {
+                // 完整模式
+                csvContent += '日期,出发地,目的地,里程(公里),高速费(元),油费(元),应报销金额(元),实际支出(元),结余金额(元)\n';
+                
+                // 添加记录行
+                filteredRecords.forEach(record => {
+                    const date = new Date(record.date);
+                    csvContent += `"${formatDate(date)}","${record.departure}","${record.destination}",`;
+                    csvContent += `${record.distance.toFixed(1)},`;
+                    csvContent += `${record.tollFee ? record.tollFee.toFixed(2) : '0.00'},`;
+                    csvContent += `${record.fuelCost.toFixed(2)},`;
+                    csvContent += `${record.reimbursableAmount.toFixed(2)},`;
+                    csvContent += `${record.actualSpending.toFixed(2)},`;
+                    csvContent += `${record.balanceAmount.toFixed(2)}\n`;
+                });
+                
+                // 添加汇总行
+                const totalRecords = filteredRecords.length;
+                const totalDistance = filteredRecords.reduce((sum, record) => sum + record.distance, 0);
+                const totalTollFee = filteredRecords.reduce((sum, record) => sum + (record.tollFee || 0), 0);
+                const totalFuelCost = filteredRecords.reduce((sum, record) => sum + record.fuelCost, 0);
+                const totalReimbursement = filteredRecords.reduce((sum, record) => sum + record.reimbursableAmount, 0);
+                const totalActualSpending = filteredRecords.reduce((sum, record) => sum + record.actualSpending, 0);
+                const totalBalance = filteredRecords.reduce((sum, record) => sum + record.balanceAmount, 0);
+                
+                csvContent += '\n';
+                csvContent += `汇总统计,${summaryTitle},,,,,,,\n`;
+                csvContent += `总行程记录数,${totalRecords},,,,,,,\n`;
+                csvContent += `总公里数,${totalDistance.toFixed(1)},,,,,,,\n`;
+                csvContent += `总高速费,${totalTollFee.toFixed(2)},,,,,,,\n`;
+                csvContent += `总油费,${totalFuelCost.toFixed(2)},,,,,,,\n`;
+                csvContent += `总应报销金额,${totalReimbursement.toFixed(2)},,,,,,,\n`;
+                csvContent += `总实际支出,${totalActualSpending.toFixed(2)},,,,,,,\n`;
+                csvContent += `总结余金额,${totalBalance.toFixed(2)},,,,,,,\n`;
+            }
+            
+            // 创建下载链接
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            
+            // 获取当前日期作为文件名的一部分
+            const formattedToday = formatDate(today);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `行程记录_${formattedToday}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // 格式化日期为 YYYY-MM-DD
+        function formatDate(date) {
+            return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+        }
+        
+        // 格式化日期时间为 YYYY-MM-DD HH:mm
+        function formatDateTime(date) {
+            return `${formatDate(date)} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        }
+        
+        // 页面加载完成后初始化应用
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
